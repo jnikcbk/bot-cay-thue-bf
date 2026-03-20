@@ -25,9 +25,9 @@ const {
   PermissionFlagsBits,
 } = require("discord.js");
 
-const TOKEN = "PASTE_TOKEN_HERE";
-const CLIENT_ID = "PASTE_CLIENT_ID_HERE";
-const GUILD_ID = "PASTE_GUILD_ID_HERE"; // để trống "" nếu muốn global
+const TOKEN = process.env.TOKEN;
+const CLIENT_ID = process.env.CLIENT_ID;
+const GUILD_ID = process.env.GUILD_ID;
 
 const SHOP_NAME = "[🛡] 𝖁𝖆𝖓𝖌𝖚𝖆𝖗𝖉 𝕭𝖑𝖔𝖝 💎";
 const SUPPORT_TEXT = "Vui lòng ghi rõ nhu cầu, game, server, level và thời gian cần hỗ trợ.";
