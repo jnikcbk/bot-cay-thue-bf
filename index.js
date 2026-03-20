@@ -145,22 +145,31 @@ async function registerCommands() {
   const rest = new REST({ version: "10" }).setToken(TOKEN);
 
   try {
+    // 1. KIỂM TRA ID TRƯỚC KHI CHẠY
+    if (!CLIENT_ID || CLIENT_ID === "PASTE_CLIENT_ID_HERE") {
+       return console.error("❌ Lỗi: Bạn chưa điền CLIENT_ID chính xác vào biến môi trường!");
+    }
+
+    console.log("🔄 Đang làm mới hệ thống lệnh Slash (Vanguard Blox)...");
+
     if (GUILD_ID && GUILD_ID.trim()) {
+      // ĐĂNG KÝ CHO SERVER CỤ THỂ (HIỆN NGAY LẬP TỨC)
+      // Bước này sẽ xóa lệnh cũ và ghi đè lệnh mới vào Server của bạn
       await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
         body: commands,
       });
-      console.log("Đã đăng ký slash commands cho guild.");
+      console.log(`✅ Đã đăng ký Slash Commands cho Server: ${GUILD_ID}`);
     } else {
+      // ĐĂNG KÝ GLOBAL (CÓ THỂ MẤT ĐẾN 1 TIẾNG ĐỂ HIỆN)
       await rest.put(Routes.applicationCommands(CLIENT_ID), {
         body: commands,
       });
-      console.log("Đã đăng ký slash commands global.");
+      console.log("✅ Đã đăng ký Slash Commands Global (Vui lòng đợi Discord cập nhật).");
     }
   } catch (err) {
-    console.error("Lỗi đăng ký slash commands:", err);
+    console.error("❌ Lỗi đăng ký slash commands:", err);
   }
 }
-
 /* =========================
    HELPER
 ========================= */
