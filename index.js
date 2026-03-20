@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000; // Render sẽ tự cung cấp PORT này
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.send('Vanguard Blox Bot is Online! 💎');
@@ -9,6 +9,7 @@ app.get('/', (req, res) => {
 app.listen(port, '0.0.0.0', () => {
   console.log(`✅ Web Server đang chạy tại port: ${port}`);
 });
+
 const {
   Client,
   GatewayIntentBits,
@@ -23,6 +24,7 @@ const {
   Events,
   ChannelType,
   PermissionFlagsBits,
+  AttachmentBuilder // Thêm AttachmentBuilder để làm file lưu lịch sử
 } = require("discord.js");
 
 const TOKEN = process.env.TOKEN;
@@ -32,20 +34,19 @@ const GUILD_ID = process.env.GUILD_ID;
 const SHOP_NAME = "[🛡] 𝖁𝖆𝖓𝖌𝖚𝖆𝖗𝖉 𝕭𝖑𝖔𝖝 💎";
 const SUPPORT_TEXT = "Vui lòng ghi rõ nhu cầu, game, server, level và thời gian cần hỗ trợ.";
 
-const SUPPORT_ROLE_ID = "";      // nếu có staff role thì dán ID vào
-const TICKET_CATEGORY_ID = "";    // nếu có category ticket thì dán ID vào
-const LOG_CHANNEL_ID = "";        // nếu có kênh log thì dán ID vào
+const SUPPORT_ROLE_ID = process.env.SUPPORT_ROLE_ID || "";     // ID Role Staff
+const TICKET_CATEGORY_ID = process.env.TICKET_CATEGORY_ID || "";  // ID Category chứa Ticket
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || "";        // ID Kênh Log lưu lịch sử
 
 if (!TOKEN || !CLIENT_ID) {
-  console.error("Thiếu TOKEN hoặc CLIENT_ID");
-  process.exit(1);
+  console.error("❌ Thiếu TOKEN hoặc CLIENT_ID");
 }
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent // Cần thiết nếu bạn muốn bot đọc nội dung chat
+    GatewayIntentBits.MessageContent 
   ],
   partials: [Partials.Channel, Partials.Message],
 });
@@ -99,20 +100,21 @@ const services = [
   { id: 43, name: "Nhiệm Vụ 4 Gravity", price: "70,000 đ", requirement: "xong 3 NV đầu và đủ 500 mas trái", category: "Gravity Quests" },
 ];
 
-/* =========================
-   MUA ACC
-   - điền thêm sau vào đây
-========================= */
-const accounts = [
-  // { id: 1, name: "Acc Sea 3 Full", price: "xxx đ", requirement: "..." , category: "Account Basic" },
-  // { id: 2, name: "Acc Max Level", price: "xxx đ", requirement: "..." , category: "Account Premium" },
-];
-
+const accounts = [];
 const allItems = [...services, ...accounts];
 const categoryNames = [...new Set(allItems.map((s) => s.category))];
 
-const serviceCategories = [...new Set(services.map((s) => s.category))];
-const accountCategories = [...new Set(accounts.map((s) => s.category))];
+/* TỐI ƯU ID NÚT BẤM (FIX LỖI) */
+const categoryMap = {
+  "cat_items": "Items & Swords",
+  "cat_apparel": "Apparel & Materials",
+  "cat_belts": "Belts & Guns",
+  "cat_boss": "Boss & Mastery",
+  "cat_beli": "Beli Farming",
+  "cat_gravity": "Gravity Quests",
+  "cat_accbasic": "Account Basic",
+  "cat_accpremium": "Account Premium"
+};
 
 /* =========================
    SLASH COMMANDS
@@ -125,11 +127,7 @@ const commands = [
     .setName("dichvu")
     .setDescription("Xem chi tiết một dịch vụ / sản phẩm")
     .addStringOption((option) =>
-      option
-        .setName("ten")
-        .setDescription("Chọn hoặc gõ tên dịch vụ")
-        .setRequired(true)
-        .setAutocomplete(true)
+      option.setName("ten").setDescription("Chọn hoặc gõ tên dịch vụ").setRequired(true).setAutocomplete(true)
     ),
   new SlashCommandBuilder().setName("support").setDescription("Mở ticket hỗ trợ"),
   new SlashCommandBuilder().setName("muacc").setDescription("Xem menu mua acc"),
@@ -137,45 +135,26 @@ const commands = [
     .setName("setup")
     .setDescription("Gửi panel shop vào một kênh")
     .addChannelOption((option) =>
-      option
-        .setName("channel")
-        .setDescription("Kênh text để gửi panel")
-        .addChannelTypes(ChannelType.GuildText)
-        .setRequired(true)
+      option.setName("channel").setDescription("Kênh text để gửi panel").addChannelTypes(ChannelType.GuildText).setRequired(true)
     ),
 ].map((cmd) => cmd.toJSON());
 
 async function registerCommands() {
   const rest = new REST({ version: "10" }).setToken(TOKEN);
-
   try {
-    // 1. KIỂM TRA ID TRƯỚC KHI CHẠY
-    if (!CLIENT_ID || CLIENT_ID === "PASTE_CLIENT_ID_HERE") {
-       return console.error("❌ Lỗi: Bạn chưa điền CLIENT_ID chính xác vào biến môi trường!");
-    }
-
     console.log("🔄 Đang làm mới hệ thống lệnh Slash (Vanguard Blox)...");
-
-    if (GUILD_ID && GUILD_ID.trim()) {
-      // ĐĂNG KÝ CHO SERVER CỤ THỂ (HIỆN NGAY LẬP TỨC)
-      // Bước này sẽ xóa lệnh cũ và ghi đè lệnh mới vào Server của bạn
-      await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {
-        body: commands,
-      });
-      console.log(`✅ Đã đăng ký Slash Commands cho Server: ${GUILD_ID}`);
-    } else {
-      // ĐĂNG KÝ GLOBAL (CÓ THỂ MẤT ĐẾN 1 TIẾNG ĐỂ HIỆN)
-      await rest.put(Routes.applicationCommands(CLIENT_ID), {
-        body: commands,
-      });
-      console.log("✅ Đã đăng ký Slash Commands Global (Vui lòng đợi Discord cập nhật).");
-    }
+    const route = (GUILD_ID && GUILD_ID.trim()) 
+      ? Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID) 
+      : Routes.applicationCommands(CLIENT_ID);
+    await rest.put(route, { body: commands });
+    console.log("✅ Đã đăng ký Slash Commands thành công!");
   } catch (err) {
     console.error("❌ Lỗi đăng ký slash commands:", err);
   }
 }
+
 /* =========================
-   HELPER
+   HELPER FUNCTIONS
 ========================= */
 function formatItemEmbed(item) {
   return new EmbedBuilder()
@@ -204,28 +183,22 @@ function getCategoryEmbed(category) {
 
 function buildMainPanel() {
   const row1 = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("cat_Items_&_Swords").setLabel("Kiếm").setStyle(ButtonStyle.Primary),
-    new ButtonBuilder().setCustomId("cat_Apparel_&_Materials").setLabel("Phụ kiện").setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder().setCustomId("cat_Belts_&_Guns").setLabel("Đai & Súng").setStyle(ButtonStyle.Success),
-    new ButtonBuilder().setCustomId("cat_Boss_&_Mastery").setLabel("Boss & Mas").setStyle(ButtonStyle.Danger)
+    new ButtonBuilder().setCustomId("cat_items").setLabel("Kiếm").setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId("cat_apparel").setLabel("Phụ kiện").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("cat_belts").setLabel("Đai & Súng").setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId("cat_boss").setLabel("Boss & Mas").setStyle(ButtonStyle.Danger)
   );
 
   const row2 = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("cat_Beli_Farming").setLabel("Beli").setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder().setCustomId("cat_Gravity_Quests").setLabel("Gravity").setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId("cat_beli").setLabel("Beli").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("cat_gravity").setLabel("Gravity").setStyle(ButtonStyle.Primary),
     new ButtonBuilder().setCustomId("open_support").setLabel("Hỗ trợ").setStyle(ButtonStyle.Success),
     new ButtonBuilder().setCustomId("open_order").setLabel("Đặt đơn").setStyle(ButtonStyle.Danger)
   );
 
   const embed = new EmbedBuilder()
     .setTitle(`🔥 MENU DỊCH VỤ - ${SHOP_NAME}`)
-    .setDescription(
-      [
-        "• Bấm nút bên dưới để xem từng nhóm dịch vụ.",
-        "• Dùng **/dichvu** để xem một gói cụ thể.",
-        "• Dùng **/support** để mở ticket hỗ trợ.",
-      ].join("\n")
-    )
+    .setDescription("• Bấm nút bên dưới để xem từng nhóm dịch vụ.\n• Dùng **/dichvu** để xem một gói cụ thể.\n• Bấm **Hỗ trợ** hoặc **Đặt đơn** để mở Ticket.")
     .setColor(0x2563eb);
 
   return { embeds: [embed], components: [row1, row2] };
@@ -233,19 +206,15 @@ function buildMainPanel() {
 
 function buildAccountPanel() {
   const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId("cat_Account_Basic").setLabel("Acc basic").setStyle(ButtonStyle.Primary),
-    new ButtonBuilder().setCustomId("cat_Account_Premium").setLabel("Acc premium").setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId("cat_accbasic").setLabel("Acc basic").setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId("cat_accpremium").setLabel("Acc premium").setStyle(ButtonStyle.Secondary),
     new ButtonBuilder().setCustomId("open_support").setLabel("Hỗ trợ").setStyle(ButtonStyle.Success),
     new ButtonBuilder().setCustomId("open_order").setLabel("Đặt đơn").setStyle(ButtonStyle.Danger)
   );
 
   const embed = new EmbedBuilder()
     .setTitle(`🧾 MENU MUA ACC - ${SHOP_NAME}`)
-    .setDescription(
-      accounts.length
-        ? "Bấm nút bên dưới để xem danh mục acc."
-        : "Chưa có sản phẩm acc trong mảng `accounts`. Thêm vào đó là xong."
-    )
+    .setDescription(accounts.length ? "Bấm nút bên dưới để xem danh mục acc." : "Hiện chưa có account nào được mở bán.")
     .setColor(0xf59e0b);
 
   return { embeds: [embed], components: [row] };
@@ -257,72 +226,34 @@ function buildSupportPanel() {
     new ButtonBuilder().setCustomId("open_order").setLabel("Tạo ticket đặt đơn").setStyle(ButtonStyle.Danger)
   );
 
-  const embed = new EmbedBuilder()
-    .setTitle(`🆘 HỖ TRỢ - ${SHOP_NAME}`)
-    .setDescription(SUPPORT_TEXT)
-    .setColor(0x22c55e);
-
+  const embed = new EmbedBuilder().setTitle(`🆘 HỖ TRỢ - ${SHOP_NAME}`).setDescription(SUPPORT_TEXT).setColor(0x22c55e);
   return { embeds: [embed], components: [row] };
 }
 
 function slugify(text) {
-  return String(text)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 20);
+  return String(text).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 20);
 }
 
+/* =========================
+   TÍNH NĂNG TICKET (NÂNG CẤP)
+========================= */
 async function createTicket(interaction, type = "support") {
-  if (!interaction.guild) {
-    return interaction.reply({ content: "Lệnh này chỉ dùng trong server.", ephemeral: true });
-  }
+  if (!interaction.guild) return interaction.reply({ content: "Lệnh này chỉ dùng trong server.", ephemeral: true });
 
   const guild = interaction.guild;
   const member = interaction.member;
-  const namePrefix = type === "order" ? "don" : "support";
+  const namePrefix = type === "order" ? "don" : "hotro";
   const channelName = `${namePrefix}-${slugify(member.user.username)}`;
 
   try {
     const overwrites = [
-      {
-        id: guild.roles.everyone.id,
-        deny: [PermissionFlagsBits.ViewChannel],
-      },
-      {
-        id: member.user.id,
-        allow: [
-          PermissionFlagsBits.ViewChannel,
-          PermissionFlagsBits.SendMessages,
-          PermissionFlagsBits.ReadMessageHistory,
-          PermissionFlagsBits.AttachFiles,
-          PermissionFlagsBits.EmbedLinks,
-        ],
-      },
-      {
-        id: client.user.id,
-        allow: [
-          PermissionFlagsBits.ViewChannel,
-          PermissionFlagsBits.SendMessages,
-          PermissionFlagsBits.ReadMessageHistory,
-          PermissionFlagsBits.ManageChannels,
-          PermissionFlagsBits.EmbedLinks,
-        ],
-      },
+      { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
+      { id: member.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.AttachFiles, PermissionFlagsBits.EmbedLinks] },
+      { id: client.user.id, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageChannels, PermissionFlagsBits.EmbedLinks] },
     ];
 
     if (SUPPORT_ROLE_ID && SUPPORT_ROLE_ID.trim()) {
-      overwrites.push({
-        id: SUPPORT_ROLE_ID,
-        allow: [
-          PermissionFlagsBits.ViewChannel,
-          PermissionFlagsBits.SendMessages,
-          PermissionFlagsBits.ReadMessageHistory,
-          PermissionFlagsBits.ManageMessages,
-        ],
-      });
+      overwrites.push({ id: SUPPORT_ROLE_ID, allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages, PermissionFlagsBits.ReadMessageHistory, PermissionFlagsBits.ManageMessages] });
     }
 
     const channel = await guild.channels.create({
@@ -335,47 +266,33 @@ async function createTicket(interaction, type = "support") {
 
     const embed = new EmbedBuilder()
       .setTitle(type === "order" ? "🧾 Ticket đặt đơn" : "🆘 Ticket hỗ trợ")
-      .setDescription(
-        type === "order"
-          ? "Gửi tên dịch vụ/sản phẩm, mức level, yêu cầu và thông tin cần thiết."
-          : SUPPORT_TEXT
-      )
+      .setDescription(type === "order" ? "Vui lòng gửi tên dịch vụ, mức level hiện tại và yêu cầu của bạn.\nStaff sẽ phản hồi trong giây lát!" : SUPPORT_TEXT)
       .setColor(type === "order" ? 0xf59e0b : 0x22c55e);
 
+    // TÍNH NĂNG MỚI: Thêm nút Nhận Đơn
     const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("ticket_close").setLabel("Đóng ticket").setStyle(ButtonStyle.Danger)
+      new ButtonBuilder().setCustomId("ticket_claim").setLabel("🙋‍♂️ Nhận đơn (Staff)").setStyle(ButtonStyle.Primary),
+      new ButtonBuilder().setCustomId("ticket_close").setLabel("🔒 Đóng & Lưu lịch sử").setStyle(ButtonStyle.Danger)
     );
 
-    await channel.send({
-      content: `${member}`,
-      embeds: [embed],
-      components: [row],
-    });
+    // TÍNH NĂNG MỚI: Ping role Staff khi tạo ticket
+    const pingText = SUPPORT_ROLE_ID ? `<@&${SUPPORT_ROLE_ID}>` : "";
+    await channel.send({ content: `Xin chào ${member}! ${pingText}`, embeds: [embed], components: [row] });
 
     if (LOG_CHANNEL_ID && LOG_CHANNEL_ID.trim()) {
       const logChannel = guild.channels.cache.get(LOG_CHANNEL_ID);
-      if (logChannel?.isTextBased()) {
-        await logChannel.send(
-          `📌 Tạo ${type === "order" ? "ticket đặt đơn" : "ticket hỗ trợ"}: ${channel} | ${member.user.tag}`
-        );
-      }
+      if (logChannel?.isTextBased()) await logChannel.send(`📌 Vừa có ${type === "order" ? "đơn mới" : "yêu cầu hỗ trợ"}: ${channel} từ ${member.user.tag}`);
     }
 
-    return interaction.reply({
-      content: `Đã tạo ticket: ${channel}`,
-      ephemeral: true,
-    });
+    return interaction.reply({ content: `✅ Đã tạo ticket thành công tại: ${channel}`, ephemeral: true });
   } catch (err) {
     console.error(err);
-    return interaction.reply({
-      content: "Không tạo được ticket. Kiểm tra quyền bot và category ticket.",
-      ephemeral: true,
-    });
+    return interaction.reply({ content: "❌ Không tạo được ticket. Hãy kiểm tra quyền của Bot.", ephemeral: true });
   }
 }
 
 /* =========================
-   EVENTS
+   EVENTS XỬ LÝ
 ========================= */
 client.once(Events.ClientReady, async (c) => {
   console.log(`✅ Bot đã online: ${c.user.tag}`);
@@ -386,190 +303,96 @@ client.on(Events.InteractionCreate, async (interaction) => {
   try {
     if (interaction.isAutocomplete()) {
       const focused = interaction.options.getFocused().toLowerCase();
-
       const matches = allItems
-        .filter(
-          (s) =>
-            s.name.toLowerCase().includes(focused) ||
-            String(s.id).includes(focused) ||
-            s.category.toLowerCase().includes(focused)
-        )
+        .filter((s) => s.name.toLowerCase().includes(focused) || String(s.id).includes(focused) || s.category.toLowerCase().includes(focused))
         .slice(0, 25)
-        .map((s) => ({
-          name: `#${s.id} ${s.name}`,
-          value: s.name,
-        }));
-
+        .map((s) => ({ name: `#${s.id} ${s.name}`, value: s.name }));
       return interaction.respond(matches);
     }
 
     if (interaction.isButton()) {
       const id = interaction.customId;
 
-      if (id.startsWith("cat_")) {
-        const category = id.replace("cat_", "").replace(/_/g, " & ").replace(/  +/g, " ").trim();
+      // Xử lý nút Danh mục (Đã FIX lỗi khoảng trắng)
+      if (categoryMap[id]) {
+        return interaction.reply({ embeds: [getCategoryEmbed(categoryMap[id])], ephemeral: true });
+      }
 
-        const realCategory =
-          category === "Items & Swords"
-            ? "Items & Swords"
-            : category === "Apparel & Materials"
-            ? "Apparel & Materials"
-            : category === "Belts & Guns"
-            ? "Belts & Guns"
-            : category === "Boss & Mastery"
-            ? "Boss & Mastery"
-            : category === "Beli Farming"
-            ? "Beli Farming"
-            : category === "Gravity Quests"
-            ? "Gravity Quests"
-            : category === "Account Basic"
-            ? "Account Basic"
-            : category === "Account Premium"
-            ? "Account Premium"
-            : null;
+      if (id === "open_support") return createTicket(interaction, "support");
+      if (id === "open_order") return createTicket(interaction, "order");
 
-        if (!realCategory) {
-          return interaction.reply({ content: "Không tìm thấy nhóm này.", ephemeral: true });
+      // TÍNH NĂNG MỚI: Xử lý nút Nhận đơn
+      if (id === "ticket_claim") {
+        if (SUPPORT_ROLE_ID && !interaction.member.roles.cache.has(SUPPORT_ROLE_ID) && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+          return interaction.reply({ content: "❌ Chỉ Staff mới có thể nhận đơn!", ephemeral: true });
         }
-
-        return interaction.reply({
-          embeds: [getCategoryEmbed(realCategory)],
-          ephemeral: true,
-        });
+        return interaction.reply({ content: `✅ <@${interaction.user.id}> đã tiếp nhận hỗ trợ đơn này! Các bạn Staff khác vui lòng lưu ý.` });
       }
 
-      if (id === "open_support") {
-        return createTicket(interaction, "support");
-      }
-
-      if (id === "open_order") {
-        return createTicket(interaction, "order");
-      }
-
+      // TÍNH NĂNG MỚI: Xử lý Đóng Ticket & Lưu lịch sử
       if (id === "ticket_close") {
-        if (!interaction.channel?.deletable) {
-          return interaction.reply({
-            content: "Mình không có quyền xóa kênh này.",
-            ephemeral: true,
-          });
+        if (!interaction.channel?.deletable) return interaction.reply({ content: "Mình không có quyền xóa kênh này.", ephemeral: true });
+
+        await interaction.reply({ content: "⏳ Đang trích xuất lịch sử trò chuyện và đóng ticket sau 5 giây..." });
+
+        try {
+          // Lấy 100 tin nhắn gần nhất để làm file log
+          const messages = await interaction.channel.messages.fetch({ limit: 100 });
+          const logContent = messages.reverse().map(m => `[${m.createdAt.toLocaleString('vi-VN')}] ${m.author.tag}: ${m.content}`).join('\n');
+          const attachment = new AttachmentBuilder(Buffer.from(logContent, 'utf-8'), { name: `Lich-su-${interaction.channel.name}.txt` });
+
+          // Gửi file log về kênh LOG
+          if (LOG_CHANNEL_ID) {
+            const logChannel = interaction.guild.channels.cache.get(LOG_CHANNEL_ID);
+            if (logChannel) {
+              await logChannel.send({
+                content: `📁 **Lịch sử Ticket:** \`${interaction.channel.name}\`\nĐóng bởi: <@${interaction.user.id}>`,
+                files: [attachment]
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Lỗi khi lưu lịch sử: ", e);
         }
 
-        await interaction.reply({ content: "Đóng ticket sau 3 giây...", ephemeral: true });
-        setTimeout(() => {
-          interaction.channel.delete().catch(() => {});
-        }, 3000);
+        setTimeout(() => interaction.channel.delete().catch(() => {}), 5000);
         return;
       }
     }
 
     if (!interaction.isChatInputCommand()) return;
 
-    if (interaction.commandName === "menu") {
-      return interaction.reply(buildMainPanel());
-    }
-
-    if (interaction.commandName === "muacc") {
-      return interaction.reply(buildAccountPanel());
-    }
-
-    if (interaction.commandName === "support") {
-      return interaction.reply(buildSupportPanel());
-    }
-
+    if (interaction.commandName === "menu") return interaction.reply(buildMainPanel());
+    if (interaction.commandName === "muacc") return interaction.reply(buildAccountPanel());
+    if (interaction.commandName === "support") return interaction.reply(buildSupportPanel());
     if (interaction.commandName === "info") {
       return interaction.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("📩 Thông tin liên hệ")
-            .setDescription(
-              [
-                `**Shop:** ${SHOP_NAME}`,
-                "• Thay phần này bằng ID admin, link Discord hoặc kênh liên hệ của shop.",
-                "• Dùng /support để mở ticket nhanh.",
-              ].join("\n")
-            )
-            .setColor(0xf59e0b),
-        ],
+        embeds: [new EmbedBuilder().setTitle("📩 Thông tin liên hệ").setDescription(`**Shop:** ${SHOP_NAME}\n• Dùng /support để mở ticket nhanh.`).setColor(0xf59e0b)],
         ephemeral: true,
       });
     }
-
     if (interaction.commandName === "banggia") {
-      const text = categoryNames
-        .map((cat) => {
-          const count = allItems.filter((s) => s.category === cat).length;
-          return `**${cat}**: ${count} gói`;
-        })
-        .join("\n");
-
-      return interaction.reply({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("📊 BẢNG GIÁ / DANH MỤC")
-            .setDescription(text || "Chưa có dữ liệu.")
-            .setColor(0xa855f7),
-        ],
-        ephemeral: true,
-      });
+      const text = categoryNames.map((cat) => `**${cat}**: ${allItems.filter((s) => s.category === cat).length} gói`).join("\n");
+      return interaction.reply({ embeds: [new EmbedBuilder().setTitle("📊 BẢNG GIÁ / DANH MỤC").setDescription(text || "Chưa có dữ liệu.").setColor(0xa855f7)], ephemeral: true });
     }
-
     if (interaction.commandName === "dichvu") {
       const selected = interaction.options.getString("ten");
-      const item = allItems.find(
-        (s) => s.name === selected || `${s.id} ${s.name}` === selected
-      );
-
-      if (!item) {
-        return interaction.reply({
-          content: "Không tìm thấy dịch vụ/sản phẩm này.",
-          ephemeral: true,
-        });
-      }
-
-      return interaction.reply({
-        embeds: [formatItemEmbed(item)],
-        ephemeral: true,
-      });
+      const item = allItems.find((s) => s.name === selected || `${s.id} ${s.name}` === selected);
+      if (!item) return interaction.reply({ content: "Không tìm thấy dịch vụ/sản phẩm này.", ephemeral: true });
+      return interaction.reply({ embeds: [formatItemEmbed(item)], ephemeral: true });
     }
-
     if (interaction.commandName === "setup") {
-      if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
-        return interaction.reply({
-          content: "Bạn không có quyền dùng lệnh này.",
-          ephemeral: true,
-        });
-      }
-
+      if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) return interaction.reply({ content: "Bạn không có quyền dùng lệnh này.", ephemeral: true });
       const channel = interaction.options.getChannel("channel", true);
-      if (!channel.isTextBased()) {
-        return interaction.reply({
-          content: "Kênh phải là kênh text.",
-          ephemeral: true,
-        });
-      }
-
-      const panel = buildMainPanel();
-      await channel.send(panel);
-
-      return interaction.reply({
-        content: `Đã gửi panel vào ${channel}.`,
-        ephemeral: true,
-      });
+      if (!channel.isTextBased()) return interaction.reply({ content: "Kênh phải là kênh text.", ephemeral: true });
+      
+      await channel.send(buildMainPanel());
+      return interaction.reply({ content: `✅ Đã gửi panel vào ${channel}.`, ephemeral: true });
     }
   } catch (err) {
     console.error(err);
-
-    if (interaction.replied || interaction.deferred) {
-      return interaction.followUp({
-        content: "Đã xảy ra lỗi khi xử lý lệnh.",
-        ephemeral: true,
-      });
-    }
-
-    return interaction.reply({
-      content: "Đã xảy ra lỗi khi xử lý lệnh.",
-      ephemeral: true,
-    });
+    if (interaction.replied || interaction.deferred) return interaction.followUp({ content: "Đã xảy ra lỗi khi xử lý lệnh.", ephemeral: true });
+    return interaction.reply({ content: "Đã xảy ra lỗi khi xử lý lệnh.", ephemeral: true });
   }
 });
 
