@@ -42,8 +42,12 @@ if (!TOKEN || !CLIENT_ID) {
 }
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
-  partials: [Partials.Channel],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent // Cần thiết nếu bạn muốn bot đọc nội dung chat
+  ],
+  partials: [Partials.Channel, Partials.Message],
 });
 
 /* =========================
