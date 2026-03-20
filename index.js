@@ -34,9 +34,9 @@ const GUILD_ID = process.env.GUILD_ID;
 const SHOP_NAME = "[🛡] 𝖁𝖆𝖓𝖌𝖚𝖆𝖗𝖉 𝕭𝖑𝖔𝖝 💎";
 const SUPPORT_TEXT = "Vui lòng ghi rõ nhu cầu, game, server, level và thời gian cần hỗ trợ.";
 
-const SUPPORT_ROLE_ID = process.env.SUPPORT_ROLE_ID || "";     // ID Role Staff
+const SUPPORT_ROLE_ID = process.env.SUPPORT_ROLE_ID || "1484434836583219220";     // ID Role Staff
 const TICKET_CATEGORY_ID = process.env.TICKET_CATEGORY_ID || "";  // ID Category chứa Ticket
-const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || "";        // ID Kênh Log lưu lịch sử
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID || "1484436268442980472";        // ID Kênh Log lưu lịch sử
 
 if (!TOKEN || !CLIENT_ID) {
   console.error("❌ Thiếu TOKEN hoặc CLIENT_ID");
