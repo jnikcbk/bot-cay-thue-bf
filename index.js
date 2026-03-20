@@ -1,3 +1,14 @@
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000; // Render sẽ tự cung cấp PORT này
+
+app.get('/', (req, res) => {
+  res.send('Vanguard Blox Bot is Online! 💎');
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`✅ Web Server đang chạy tại port: ${port}`);
+});
 const {
   Client,
   GatewayIntentBits,
