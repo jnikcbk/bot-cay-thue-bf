@@ -1,25 +1,4 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Bot - Code Mới & Đẹp Hơn</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; line-height: 1.6; }
-        pre { background: #1e2937; padding: 20px; border-radius: 12px; overflow-x: auto; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: #22d3ee; font-size: 2.5rem; margin: 0; }
-        .badge { background: #22d3ee; color: #0f172a; padding: 5px 12px; border-radius: 9999px; font-size: 0.9rem; display: inline-block; margin-top: 10px; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🌟 RPG Bot - Phiên Bản Đẹp & Hoàn Chỉnh Hơn</h1>
-        <p style="margin: 10px 0; opacity: 0.9;">Đã rebuild toàn bộ code • Thêm rất nhiều lệnh • Giao diện embed siêu đẹp • Hệ thống Level + EXP • Shop • Equip • Và lệnh <strong>!mhelp</strong></p>
-        <span class="badge">discord.js v14 • Tiếng Việt 100% • Dễ dùng</span>
-    </div>
-
-<pre><code>const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 
 // ===== CONFIG =====
@@ -83,9 +62,9 @@ function addItem(user, item, amount = 1) {
 }
 
 function removeItem(user, item, amount = 1) {
-  if (!user.inventory[item] || user.inventory[item] &lt; amount) return false;
+  if (!user.inventory[item] || user.inventory[item] < amount) return false;
   user.inventory[item] -= amount;
-  if (user.inventory[item] &lt;= 0) delete user.inventory[item];
+  if (user.inventory[item] <= 0) delete user.inventory[item];
   return true;
 }
 
@@ -94,19 +73,19 @@ function rand(min, max) {
 }
 
 function getRequiredExp(level) {
-  return level * 75 + 25; // Công thức đẹp, dễ lên level
+  return level * 75 + 25;
 }
 
 function gainExp(user, amount) {
-  if (amount &lt;= 0) return '';
+  if (amount <= 0) return '';
   user.exp += amount;
   let levelUpText = '';
 
-  while (user.exp &gt;= getRequiredExp(user.level)) {
+  while (user.exp >= getRequiredExp(user.level)) {
     user.exp -= getRequiredExp(user.level);
     user.level++;
     user.maxHp += 25;
-    user.hp = user.maxHp; // Hồi full HP khi lên level
+    user.hp = user.maxHp;
     levelUpText += `🎉 **LEVEL UP!** Đạt level **${user.level}** (+25 HP max)\n`;
   }
   return levelUpText;
@@ -151,11 +130,10 @@ client.on('messageCreate', async (msg) => {
       .setDescription('**Prefix:** `!`\nDùng lệnh để bắt đầu hành trình phiêu lưu của bạn!')
       .addFields(
         { name: '🌟 **Cơ bản**', value: '`!start` • Tạo / reset nhân vật\n`!profile` • Thông tin chi tiết\n`!inv` • Kho đồ\n`!top` • Bảng xếp hạng', inline: true },
-        { name: '💰 **Kinh tế**', value: '`!daily` • Thưởng hàng ngày\n`!shop` • Cửa hàng\n`!buy &lt;item&gt; [số]` • Mua\n`!sell &lt;item&gt; [số]` • Bán', inline: true },
+        { name: '💰 **Kinh tế**', value: '`!daily` • Thưởng hàng ngày\n`!shop` • Cửa hàng\n`!buy <item> [số]` • Mua\n`!sell <item> [số]` • Bán', inline: true },
         { name: '🪓 **Thu thập**', value: '`!wood` • Chặt gỗ\n`!mine` • Đào mỏ', inline: true },
-        { name: '⚔️ **Chiến đấu**', value: '`!fight` • Đánh quái\n`!heal` • Hồi máu\n`!equip &lt;vũ khí&gt;` • Trang bị\n`!unequip` • Tháo vũ khí', inline: true }
+        { name: '⚔️ **Chiến đấu**', value: '`!fight` • Đánh quái\n`!heal` • Hồi máu\n`!equip <vũ khí>` • Trang bị\n`!unequip` • Tháo vũ khí', inline: true }
       )
-      .setImage('https://i.imgur.com/2fP8v6c.png') // Bạn có thể thay bằng link ảnh RPG
       .setFooter({ text: `Đang chơi cùng ${msg.author.username} • ${new Date().getFullYear()}` });
     return msg.reply({ embeds: [helpEmbed] });
   }
@@ -197,7 +175,7 @@ client.on('messageCreate', async (msg) => {
   // ==================== DAILY ====================
   if (cmd === 'daily') {
     const now = Date.now();
-    if (now - user.lastDaily &lt; 86400000) { // 24 giờ
+    if (now - user.lastDaily < 86400000) { // 24 giờ
       const timeLeft = Math.floor((86400000 - (now - user.lastDaily)) / 3600000);
       return msg.reply(`⏳ Bạn đã nhận daily rồi! Chờ **${timeLeft} giờ** nữa nhé.`);
     }
@@ -254,7 +232,7 @@ client.on('messageCreate', async (msg) => {
     const counterDmg = rand(6, 14);
     user.hp -= counterDmg;
 
-    if (user.hp &lt;= 0) {
+    if (user.hp <= 0) {
       user.hp = user.maxHp;
       saveData();
       return msg.reply({ embeds: [createEmbed('☠️ Bạn đã chết!', 'Quái vật quá mạnh!\nHP đã được hồi phục đầy đủ.', 0xff4444)] });
@@ -307,10 +285,8 @@ client.on('messageCreate', async (msg) => {
     if (!itemKey || !ITEMS[itemKey].buy) return msg.reply('❌ Item không có trong cửa hàng!');
 
     const amount = parseInt(args[1]) || 1;
-    if (amount &lt; 1) amount = 1;
-
     const cost = ITEMS[itemKey].buy * amount;
-    if (user.money &lt; cost) return msg.reply(`❌ Không đủ tiền! Cần **${cost}$**`);
+    if (user.money < cost) return msg.reply(`❌ Không đủ tiền! Cần **${cost}$**`);
 
     user.money -= cost;
     addItem(user, itemKey, amount);
@@ -327,9 +303,7 @@ client.on('messageCreate', async (msg) => {
     if (!itemKey) return msg.reply('❌ Item không tồn tại!');
 
     const amount = parseInt(args[1]) || 1;
-    if (amount &lt; 1) amount = 1;
-
-    if (!user.inventory[itemKey] || user.inventory[itemKey] &lt; amount) {
+    if (!user.inventory[itemKey] || user.inventory[itemKey] < amount) {
       return msg.reply('❌ Bạn không có đủ item để bán!');
     }
 
@@ -376,11 +350,3 @@ client.on('messageCreate', async (msg) => {
 });
 
 client.login(process.env.TOKEN);
-</code></pre>
-
-    <p style="text-align: center; margin-top: 30px; opacity: 0.8;">
-        ✅ Code đã được rebuild hoàn toàn • Đẹp hơn • Nhiều lệnh hơn • Hệ thống EXP/Level • Shop • Equip • !mhelp siêu đẹp<br>
-        Chỉ cần copy paste vào file bot.js là chạy ngay! Chúc bạn vui vẻ với bot RPG mới 🔥
-    </p>
-</body>
-</html>
