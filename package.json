@@ -1,14 +1,11 @@
 {
-  "name": "vanguard-blox-bot",
+  "name": "minecraft-text-bot",
   "version": "1.0.0",
-  "description": "Discord Bot for Blox Fruit Shop by Minh Meo & Kien",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "express": "^4.18.2",
-    "dotenv": "^16.4.5"
+    "discord.js": "^14.22.1"
   }
 }
