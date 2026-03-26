@@ -594,11 +594,20 @@ if (cmd === 'mine' || cmd === 'daomo') {
         .setTimestamp();
 
     if (extraItem) {
-        mineEmbed.addField('👀 PHÁT HIỆN BẤT NGỜ!', `${extraItem.emoji} Bạn đào trúng **1 ${extraItem.name}**!`, false);
+        // Đổi addField thành addFields và dùng cấu trúc { name, value, inline }
+        mineEmbed.addFields({ 
+            name: '👀 PHÁT HIỆN BẤT NGỜ!', 
+            value: `${extraItem.emoji} Bạn đào trúng **1 ${extraItem.name}**!`, 
+            inline: false 
+        });
     }
 
     if (lvlMsg) {
-        mineEmbed.addField('🆙 LEVEL UP!', `🌟 **${lvlMsg}**`, false);
+        mineEmbed.addFields({ 
+            name: '🆙 LEVEL UP!', 
+            value: `🌟 **${lvlMsg}**`, 
+            inline: false 
+        });
         mineEmbed.setColor('#FEE75C');
     }
 
