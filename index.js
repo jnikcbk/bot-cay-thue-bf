@@ -309,19 +309,18 @@ if (cmd === 'start') {
         .setFooter({ text: 'Minh Meo Eternal RPG Project', iconURL: client.user.displayAvatarURL() })
         .setTimestamp();
 
-    // Tạo nút bấm đặt tên
-    const row = new ActionRowBuilder()
+    const row = new ActionRowBuilder() // Đổi từ MessageActionRow
         .addComponents(
-            new ButtonBuilder()
+            new ButtonBuilder() // Đổi từ MessageButton
                 .setCustomId('set_name_trigger')
                 .setLabel('Đặt Tên Nhân Vật')
-                .setStyle(ButtonStyle.Primary)
+                .setStyle(ButtonStyle.Primary) // Đổi từ 'PRIMARY'
                 .setEmoji('📝'),
             
             new ButtonBuilder()
                 .setCustomId('start_adventure')
                 .setLabel('Bắt Đầu Ngay')
-                .setStyle(ButtonStyle.Success)
+                .setStyle(ButtonStyle.Success) // Đổi từ 'SUCCESS'
                 .setEmoji('⚔️')
         );
 
