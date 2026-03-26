@@ -1054,9 +1054,10 @@ if (cmd === 'top' || cmd === 'lb' || cmd === 'rank') {
         .setTimestamp();
 
    return msg.reply({ 
-        content: `👑 **|** Vinh danh những người dẫn đầu!`,
-        embeds: [topEmbed] 
-    });
-}); // <--- Dấu này đóng sự kiện client.on('messageCreate', ...)
+            content: `👑 **|** Vinh danh những người dẫn đầu!`,
+            embeds: [topEmbed] 
+        });
+    } // Kết thúc lệnh if (cmd === 'top')
+}); // Kết thúc sự kiện client.on('messageCreate')
 
 client.login(process.env.TOKEN);
