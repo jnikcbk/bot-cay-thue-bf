@@ -1009,55 +1009,44 @@ if (cmd === 'unequip' || cmd === 'thao') {
         embeds: [unequipEmbed] 
     });
 }
- // ==================== TOP / LEADERBOARD (UPGRADED) ====================
-if (cmd === 'top' || cmd === 'lb' || cmd === 'rank') {
-    // 1. Sắp xếp danh sách người dùng theo tiền (Money)
-    const sortedUsers = Object.entries(db.users)
-        .sort((a, b) => b[1].money - a[1].money)
-        .slice(0, 10); // Lấy Top 10 cho máu!
+ // --- LỆNH TOP (VÍ TRÍ CUỐI CÙNG TRONG MESSAGE CREATE) ---
+    if (cmd === 'top') {
+        const sorted = Object.entries(db.users)
+            .sort((a, b) => b[1].money - a[1].money)
+            .slice(0, 10);
 
-    if (sortedUsers.length === 0) {
-        return msg.reply('📭 **Bảng xếp hạng hiện đang trống. Hãy là người đầu tiên kiếm tiền!**');
-    }
+        const topList = sorted.map(([id, data], i) => {
+            let medal = '';
+            if (i === 0) medal = '🥇';
+            else if (i === 1) medal = '🥈';
+            else if (i === 2) medal = '🥉';
+            else medal = `**#${i + 1}**`;
 
-    // 2. Tạo nội dung danh sách với Huy chương
-    const topList = sortedUsers.map(([id, data], i) => {
-        let medal = '';
-        if (i === 0) medal = '🥇';
-        else if (i === 1) medal = '🥈';
-        else if (i === 2) medal = '🥉';
-        else medal = `**#${i + 1}**`;
+            const userTag = client.users.cache.get(id)?.username || `User_${id.slice(-4)}`;
+            return `${medal} **${userTag}** — \`${data.money.toLocaleString()}$\``;
+        }).join('\n');
 
-        // Lấy tên người dùng từ cache của Discord nếu có, không thì dùng ID
-        const userTag = client.users.cache.get(id)?.username || `User_${id.slice(-4)}`;
-        
-        return `${medal} **${userTag}** — \`${data.money.toLocaleString()}$\``;
-    }).join('\n');
+        const userRank = Object.entries(db.users)
+            .sort((a, b) => b[1].money - a[1].money)
+            .findIndex(entry => entry[0] === msg.author.id) + 1;
 
-    // 3. Tìm thứ hạng của chính người dùng hiện tại
-    const userRank = Object.entries(db.users)
-        .sort((a, b) => b[1].money - a[1].money)
-        .findIndex(entry => entry[0] === msg.author.id) + 1;
+        const topEmbed = new EmbedBuilder()
+            .setColor('#FEE75C')
+            .setTitle('🏆 BẢNG VÀNG ĐẠI GIA OMNIVERSE')
+            .setDescription(`>>> *Dưới đây là danh sách những nhà giàu nhất.* \n\n${topList}`)
+            .addFields({ 
+                name: '👤 Thứ hạng của bạn', 
+                value: `Bạn đang đứng vị trí **#${userRank}** với \`${user.money.toLocaleString()}$\`` 
+            })
+            .setTimestamp();
 
-    // 4. Tạo Embed "Xịn"
-    const topEmbed = new EmbedBuilder()
-        .setColor('#FEE75C') // Màu vàng hoàng gia
-        .setTitle('🏆 BẢNG VÀNG ĐẠI GIA OMNIVERSE')
-        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon Cup vàng
-        .setDescription(`>>> *Dưới đây là danh sách những nhà huấn luyện giàu có nhất thế giới RPG.*\n\n${topList}`)
-        .addFields({ 
-            name: '👤 Thứ hạng của bạn', 
-            value: `Bạn đang đứng vị trí **#${userRank}** với \`${user.money.toLocaleString()}$\``, 
-            inline: false 
-        })
-        .setFooter({ text: 'Cập nhật thời gian thực • Hãy chăm chỉ cày cuốc!', iconURL: client.user.displayAvatarURL() })
-        .setTimestamp();
-
-   return msg.reply({ 
+        return msg.reply({ 
             content: `👑 **|** Vinh danh những người dẫn đầu!`,
             embeds: [topEmbed] 
         });
-    } // Kết thúc lệnh if (cmd === 'top')
-}); // Kết thúc sự kiện client.on('messageCreate')
+    } // <--- Dấu này cực kỳ quan trọng: Đóng lệnh !top
 
+}); // <--- Dấu này đóng sự kiện messageCreate
+
+// Cuối cùng là login
 client.login(process.env.TOKEN);
