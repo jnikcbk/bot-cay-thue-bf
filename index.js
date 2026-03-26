@@ -900,10 +900,14 @@ if (cmd === 'sell' || cmd === 'ban') {
     // 5. Giao diện xác nhận "Xịn"
     const sellEmbed = new EmbedBuilder()
         .setColor('#5865F2') // Màu xanh thương hiệu
-        .setAuthor({ name: 'GIAO DỊCH HOÀN TẤT', iconURL: ' })
+        .setAuthor({ 
+            name: 'GIAO DỊCH HOÀN TẤT', 
+            iconURL: 'https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif' 
+        })
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
+        .setImage('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Nếu bạn muốn ảnh GIF hiện to ở giữa
         .setDescription(`>>> Bạn đã bán vật phẩm cho thương nhân và nhận được tiền mặt.`)
-        .https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif' addFields(
+        .addFields(
             { name: '📦 Vật phẩm bán', value: `\`${amount}x\` **${item.name}** ${item.emoji || ''}`, inline: true },
             { name: '💰 Thu nhập', value: `\`+${totalEarn.toLocaleString()}$\``, inline: true },
             { name: '💳 Số dư mới', value: `\`${user.money.toLocaleString()}$\``, inline: true }
@@ -915,7 +919,6 @@ if (cmd === 'sell' || cmd === 'ban') {
         content: `💵 **|** Giao dịch thành công, **${msg.author.username}**!`,
         embeds: [sellEmbed] 
     });
-}
 
   // ==================== EQUIP (UPGRADED) ====================
 if (cmd === 'equip' || cmd === 'mac' || cmd === 'dung') {
