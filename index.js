@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const fs = require('fs');
 
 // ===== CONFIG =====
@@ -188,7 +188,7 @@ function gainExp(user, amount) {
  * @param {string} color - Mã màu HEX (Mặc định là màu Blurple)
  */
 function createEmbed(title, description, color = '#5865F2') {
-    return new MessageEmbed()
+    return new EmbedBuilder()
         .setTitle(title)
         .setDescription(description)
         .setColor(color)
@@ -232,7 +232,7 @@ client.on('messageCreate', async (msg) => {
 
   // ==================== HELP / MHELP (ULTIMATE UPGRADE) ====================
 if (cmd === 'bucactaodi' || cmd === 'mhelp' || cmd === 'trogiup') {
-    const helpEmbed = new MessageEmbed()
+    const helpEmbed = new EmbedBuilder()
         .setColor('#5865F2') // Màu Blurple đặc trưng của Discord
         .setTitle('📜 HỆ THỐNG LỆNH OMNIVERSE RPG')
         .setThumbnail(client.user.displayAvatarURL())
@@ -296,7 +296,7 @@ if (cmd === 'start') {
     saveData();
 
     // Tạo Embed chuyên nghiệp
-    const startEmbed = new MessageEmbed()
+    const startEmbed = new EmbedBuilder()
         .setColor('#5865F2')
         .setTitle('✨ KHỞI ĐẦU HÀNH TRÌNH MỚI')
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
@@ -347,7 +347,7 @@ if (cmd === 'profile' || cmd === 'info' || cmd === 'inf') {
         : '❌ *Chưa trang bị*';
 
     // Tạo Embed phong cách hiện đại
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#2F3136') // Màu tối sang trọng
         .setAuthor({ 
             name: `HỒ SƠ NHÀ HUẤN LUYỆN: ${msg.author.username}`, 
@@ -372,7 +372,7 @@ if (cmd === 'inv' || cmd === 'inventory' || cmd === 'tui') {
     const inventoryEntries = Object.entries(user.inventory);
 
     if (inventoryEntries.length === 0) {
-        const emptyEmbed = new MessageEmbed()
+        const emptyEmbed = new EmbedBuilder()
             .setColor('#ED4245')
             .setTitle('🎒 KHO ĐỒ TRỐNG RỖNG')
             .setDescription('>>> *Có vẻ như bạn chưa có gì trong tay cả. Hãy bắt đầu chuyến phiêu lưu để thu thập vật phẩm nhé!*')
@@ -390,7 +390,7 @@ if (cmd === 'inv' || cmd === 'inventory' || cmd === 'tui') {
         })
         .join('\n');
 
-    const invEmbed = new MessageEmbed()
+    const invEmbed = new EmbedBuilder()
         .setColor('#FEE75C') // Màu vàng rực rỡ cho kho báu
         .setAuthor({ 
             name: `HÀNH TRANG CỦA ${msg.author.username.toUpperCase()}`, 
@@ -436,7 +436,7 @@ if (cmd === 'daily' || cmd === 'nhanqua') {
         const hours = Math.floor(timeLeft / 3600000);
         const minutes = Math.floor((timeLeft % 3600000) / 60000);
         
-        const waitEmbed = new MessageEmbed()
+        const waitEmbed = new EmbedBuilder()
             .setColor('#ED4245')
             .setDescription(`⏳ **|** Bạn đã nhận quà hôm nay rồi!\n\n> Hãy quay lại sau: **${hours} giờ ${minutes} phút** nữa nhé.`);
         return msg.reply({ embeds: [waitEmbed] });
@@ -454,7 +454,7 @@ if (cmd === 'daily' || cmd === 'nhanqua') {
     saveData();
 
     // Tạo Embed phần thưởng
-    const dailyEmbed = new MessageEmbed()
+    const dailyEmbed = new EmbedBuilder()
         .setColor('#57F287') // Màu xanh lá tươi mới
         .setTitle('🌅 PHẦN THƯỞNG HẰNG NGÀY')
         .setThumbnail('https://i.pinimg.com/originals/da/2a/fa/da2afa475176eb220f9b8f0ec78f12c9.gif') // Icon hộp quà cute
@@ -499,7 +499,7 @@ if (cmd === 'wood' || cmd === 'chatgo') {
     saveData();
 
     // Tạo Embed chuyên nghiệp
-    const woodEmbed = new MessageEmbed()
+    const woodEmbed = new EmbedBuilder()
         .setColor('#43B581') // Màu xanh lá của rừng rậm
         .setAuthor({ 
             name: `${msg.author.username} đang tiến vào khu rừng...`, 
@@ -578,7 +578,7 @@ if (cmd === 'mine' || cmd === 'daomo') {
     const lvlMsg = gainExp(user, expG);
     saveData();
 
-    const mineEmbed = new MessageEmbed()
+    const mineEmbed = new EmbedBuilder()
         .setColor(color)
         .setAuthor({ 
             name: `${msg.author.username} đang khai thác tại hầm mỏ sâu...`, 
@@ -641,7 +641,7 @@ if (cmd === 'fight' || cmd === 'chien' || cmd === 'pve') {
     if (user.hp <= 0) {
         user.hp = Math.floor(user.maxHp * 0.2); // Chết thì hồi lại 20% máu thôi cho có độ khó
         saveData();
-        const deathEmbed = new MessageEmbed()
+        const deathEmbed = new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('☠️ BẠN ĐÃ TỬ TRẬN!')
             .setThumbnail('https://i.imgur.com/u79K69E.png')
@@ -668,7 +668,7 @@ if (cmd === 'fight' || cmd === 'chien' || cmd === 'pve') {
     saveData();
 
     // Embed chiến đấu
-    const fightEmbed = new MessageEmbed()
+    const fightEmbed = new new EmbedBuilder()
         .setColor(isCrit ? '#FEE75C' : '#5865F2')
         .setAuthor({ name: `Trận chiến với ${monster.name}`, iconURL: msg.author.displayAvatarURL() })
         .setDescription(`>>> ${isCrit ? '💥 **CHÍ MẠNG!** ' : ''}Bạn vung vũ khí gây **${totalDmg}** sát thương!\n${monster.emoji} **${monster.name}** gục ngã sau đòn đánh.`)
@@ -694,7 +694,7 @@ if (cmd === 'heal' || cmd === 'bomau' || cmd === 'hptiep') {
     // 1. Kiểm tra số lượng bình máu
     const potionCount = user.inventory.potion || 0;
     if (potionCount <= 0) {
-        const noPotionEmbed = new MessageEmbed()
+        const noPotionEmbed = new EmbedBuilder()
             .setColor('#FFAA00')
             .setAuthor({ name: 'THIẾU VẬT PHẨM!', iconURL: msg.author.displayAvatarURL() })
             .setDescription('>>> ❌ Bạn không còn **Bình Máu (Potion)** nào trong kho đồ!\n\n💡 *Mẹo: Hãy dùng lệnh `!shop` để mua thêm hoặc đi `!fight` để nhặt nhé.*');
@@ -720,7 +720,7 @@ if (cmd === 'heal' || cmd === 'bomau' || cmd === 'hptiep') {
     const hpPercent = Math.floor((user.hp / user.maxHp) * 10);
     const hpBar = '❤️'.repeat(hpPercent) + '🖤'.repeat(10 - hpPercent);
 
-    const healEmbed = new MessageEmbed()
+    const healEmbed = new EmbedBuilder()
         .setColor('#57F287') // Màu xanh hồi phục
         .setAuthor({ name: `${msg.author.username} đã sử dụng Bình Máu`, iconURL: msg.author.displayAvatarURL() })
         .setThumbnail('https://i.imgur.com/8QGj0rL.png') // Icon bình máu/trái tim
@@ -762,7 +762,7 @@ if (cmd === 'shop' || cmd === 'cuahang' || cmd === 'store') {
     });
 
     // 2. Tạo Embed chuyên nghiệp
-    const shopEmbed = new MessageEmbed()
+    const shopEmbed = new EmbedBuilder()
         .setColor('#FEE75C') // Màu vàng của tiền vàng
         .setTitle('🛒 TRUNG TÂM GIAO THƯƠNG OMNIVERSE')
         .setThumbnail('https://i.imgur.com/3Z6qHwG.png') // Icon túi tiền hoặc shop
@@ -802,7 +802,7 @@ if (cmd === 'shop' || cmd === 'cuahang' || cmd === 'store') {
 if (cmd === 'buy' || cmd === 'mua') {
     // 1. Hướng dẫn nếu thiếu đối số
     if (!args[0]) {
-        const helpEmbed = new MessageEmbed()
+        const helpEmbed = new EmbedBuilder()
             .setColor('#FFAA00')
             .setAuthor({ name: 'HƯỚNG DẪN MUA ĐỒ', iconURL: msg.author.displayAvatarURL() })
             .setDescription('>>> 🛒 **Cách dùng:** `!buy <tên vật phẩm> [số lượng]`\n\n*Ví dụ: `!buy potion 5` hoặc `!buy kiem`*');
@@ -825,7 +825,7 @@ if (cmd === 'buy' || cmd === 'mua') {
 
     // 3. Kiểm tra túi tiền
     if (user.money < totalCost) {
-        const poorEmbed = new MessageEmbed()
+        const poorEmbed = new EmbedBuilder()
             .setColor('#ED4245')
             .setDescription(`❌ **Giao dịch thất bại!**\n\nBạn còn thiếu \`${(totalCost - user.money).toLocaleString()}$\` để mua **${amount}x ${item.name}**.`);
         return msg.reply({ embeds: [poorEmbed] });
@@ -837,7 +837,7 @@ if (cmd === 'buy' || cmd === 'mua') {
     saveData();
 
     // 5. Embed xác nhận cực đẹp
-    const successEmbed = new MessageEmbed()
+    const successEmbed = new EmbedBuilder()
         .setColor('#57F287')
         .setAuthor({ name: 'GIAO DỊCH THÀNH CÔNG', iconURL: 'https://i.imgur.com/3Z6qHwG.png' })
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
@@ -860,7 +860,7 @@ if (cmd === 'buy' || cmd === 'mua') {
 if (cmd === 'sell' || cmd === 'ban') {
     // 1. Kiểm tra đối số đầu vào
     if (!args[0]) {
-        const sellHelp = new MessageEmbed()
+        const sellHelp = new EmbedBuilder()
             .setColor('#FFAA00')
             .setAuthor({ name: 'HƯỚNG DẪN BÁN VẬT PHẨM', iconURL: msg.author.displayAvatarURL() })
             .setDescription('>>> 💰 **Cách dùng:** `!sell <tên vật phẩm> [số lượng]`\n\n*Ví dụ: `!sell go 10` hoặc `!sell iron`*');
@@ -898,7 +898,7 @@ if (cmd === 'sell' || cmd === 'ban') {
     saveData();
 
     // 5. Giao diện xác nhận "Xịn"
-    const sellEmbed = new MessageEmbed()
+    const sellEmbed = new EmbedBuilder()
         .setColor('#5865F2') // Màu xanh thương hiệu
         .setAuthor({ name: 'GIAO DỊCH HOÀN TẤT', iconURL: 'https://i.imgur.com/3Z6qHwG.png' })
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
@@ -921,7 +921,7 @@ if (cmd === 'sell' || cmd === 'ban') {
 if (cmd === 'equip' || cmd === 'mac' || cmd === 'dung') {
     // 1. Kiểm tra đầu vào
     if (!args[0]) {
-        const equipHelp = new MessageEmbed()
+        const equipHelp = new EmbedBuilder()
             .setColor('#FFAA00')
             .setAuthor({ name: 'HƯỚNG DẪN TRANG BỊ', iconURL: msg.author.displayAvatarURL() })
             .setDescription('>>> 🗡️ **Cách dùng:** `!equip <tên vũ khí>`\n\n*Ví dụ: `!equip kiem sat` hoặc `!equip diamond_sword`*');
@@ -954,7 +954,7 @@ if (cmd === 'equip' || cmd === 'mac' || cmd === 'dung') {
     saveData();
 
     // 6. Embed trang bị "Xịn"
-    const equipEmbed = new MessageEmbed()
+    const equipEmbed = new EmbedBuilder()
         .setColor('#5865F2')
         .setAuthor({ name: 'TRANG BỊ VŨ KHÍ MỚI', iconURL: msg.author.displayAvatarURL() })
         .setThumbnail('https://i.imgur.com/u79K69E.png') // Icon vũ khí/chiến binh
@@ -989,7 +989,7 @@ if (cmd === 'unequip' || cmd === 'thao') {
     saveData();
 
     // 4. Tạo Embed thông báo "Xịn"
-    const unequipEmbed = new MessageEmbed()
+    const unequipEmbed = new EmbedBuilder()
         .setColor('#2F3136') // Màu tối sang trọng (trạng thái nghỉ)
         .setAuthor({ name: 'THÁO TRANG BỊ', iconURL: msg.author.displayAvatarURL() })
         .setThumbnail('https://i.imgur.com/u79K69E.png') // Icon nhân vật/giáp trụ
@@ -1037,7 +1037,7 @@ if (cmd === 'top' || cmd === 'lb' || cmd === 'rank') {
         .findIndex(entry => entry[0] === msg.author.id) + 1;
 
     // 4. Tạo Embed "Xịn"
-    const topEmbed = new MessageEmbed()
+    const topEmbed = new EmbedBuilder()
         .setColor('#FEE75C') // Màu vàng hoàng gia
         .setTitle('🏆 BẢNG VÀNG ĐẠI GIA OMNIVERSE')
         .setThumbnail('https://i.imgur.com/mO7X8f0.png') // Icon Cup vàng
