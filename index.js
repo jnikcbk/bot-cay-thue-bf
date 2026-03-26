@@ -270,18 +270,18 @@ if (cmd === 'bucactaodi' || cmd === 'mhelp' || cmd === 'trogiup') {
         .setTimestamp();
 
     // Thêm nút bấm tương tác nhanh
-    const row = new MessageActionRow()
-        .addComponents(
-            new MessageButton()
-                .setLabel('Tham Gia Community')
-                .setStyle('LINK')
-                .setURL('https://discord.gg/your-link'), // Thay link server của bạn vào đây
-            new MessageButton()
-                .setCustomId('quick_start')
-                .setLabel('Bắt Đầu Ngay')
-                .setStyle('SUCCESS')
-                .setEmoji('🚀')
-        );
+    const row = new ActionRowBuilder()
+    .addComponents(
+        new ButtonBuilder()
+            .setLabel('Tham Gia Community')
+            .setStyle(ButtonStyle.Link)
+            .setURL('https://discord.gg/your-link'),
+        new ButtonBuilder()
+            .setCustomId('quick_start')
+            .setLabel('Bắt Đầu Ngay')
+            .setStyle(ButtonStyle.Success)
+            .setEmoji('🚀')
+    );
 
     return msg.reply({ 
         embeds: [helpEmbed],
@@ -305,7 +305,7 @@ if (cmd === 'start') {
             `🔹 **Trạng thái:** Tài khoản đã sẵn sàng.\n` +
             `🔹 **Nhiệm vụ:** Hãy đặt tên cho nhân vật của bạn để bắt đầu phiêu lưu.`
         )
-        .addField('🚀 Hướng dẫn', 'Nhấn vào nút bên dưới để đặt tên định danh cho tài khoản của bạn.', false)
+        .addFields({ name: '🚀 Hướng dẫn', value: 'Nhấn vào nút bên dưới để đặt tên định danh cho tài khoản của bạn.', inline: false })
         .setFooter({ text: 'Minh Meo Eternal RPG Project', iconURL: client.user.displayAvatarURL() })
         .setTimestamp();
 
