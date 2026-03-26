@@ -262,7 +262,7 @@ if (cmd === 'bucactaodi' || cmd === 'mhelp' || cmd === 'trogiup') {
                 inline: false 
             }
         )
-        .setImage('https://i.imgur.com/G5Z5fGk.png') // Bạn có thể thêm một banner ngang ở đây cho đẹp
+        .setImage('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Bạn có thể thêm một banner ngang ở đây cho đẹp
         .setFooter({ 
             text: `Yêu cầu bởi ${msg.author.username} • Minh Meo Eternal Project`, 
             iconURL: msg.author.displayAvatarURL({ dynamic: true }) 
@@ -396,7 +396,7 @@ if (cmd === 'inv' || cmd === 'inventory' || cmd === 'tui') {
             name: `HÀNH TRANG CỦA ${msg.author.username.toUpperCase()}`, 
             iconURL: msg.author.displayAvatarURL({ dynamic: true }) 
         })
-        .setThumbnail('https://i.imgur.com/mO7X8f0.png') // Icon rương đồ Pokémon/RPG
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon rương đồ Pokémon/RPG
         .setDescription(`>>> *Dưới đây là tất cả những gì bạn đang sở hữu. Hãy sử dụng chúng một cách khôn ngoan!*`)
         .addFields(
             { name: '🎒 Vật phẩm sở hữu', value: itemList || 'Chưa có vật phẩm nào.', inline: false },
@@ -505,7 +505,7 @@ if (cmd === 'wood' || cmd === 'chatgo') {
             name: `${msg.author.username} đang tiến vào khu rừng...`, 
             iconURL: msg.author.displayAvatarURL({ dynamic: true }) 
         })
-        .setThumbnail('https://i.imgur.com/L6MWhfN.png') // Icon cây rìu hoặc cây xanh
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon cây rìu hoặc cây xanh
         .setDescription(`>>> *Tiếng rìu vang vọng khắp cánh rừng cổ thụ.*`)
         .addFields(
             { name: '🌲 Tài nguyên thu được', value: `\`+${woodAmount}\` Gỗ`, inline: true },
@@ -584,7 +584,7 @@ if (cmd === 'mine' || cmd === 'daomo') {
             name: `${msg.author.username} đang khai thác tại hầm mỏ sâu...`, 
             iconURL: msg.author.displayAvatarURL({ dynamic: true }) 
         })
-        .setThumbnail('https://i.imgur.com/vHqLhWl.png')
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif')
         .setDescription(`>>> *Keng! Một tiếng vang lạ thường từ vách đá...*`)
         .addFields(
             { name: '💎 Khoáng sản chính', value: `\`+${amount}\` **${ITEMS[item]?.name || item}**`, inline: true },
@@ -644,7 +644,7 @@ if (cmd === 'fight' || cmd === 'chien' || cmd === 'pve') {
         const deathEmbed = new EmbedBuilder()
             .setColor('#FF0000')
             .setTitle('☠️ BẠN ĐÃ TỬ TRẬN!')
-            .setThumbnail('https://i.imgur.com/u79K69E.png')
+            .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif')
             .setDescription(`>>> **${monster.emoji} ${monster.name}** đã hạ gục bạn!\nBạn được đưa về làng để cấp cứu (Hồi 20% HP).`)
             .setFooter({ text: 'Hãy mua thêm Bình Máu trước khi ra trận!' });
         return msg.reply({ embeds: [deathEmbed] });
@@ -723,7 +723,7 @@ if (cmd === 'heal' || cmd === 'bomau' || cmd === 'hptiep') {
     const healEmbed = new EmbedBuilder()
         .setColor('#57F287') // Màu xanh hồi phục
         .setAuthor({ name: `${msg.author.username} đã sử dụng Bình Máu`, iconURL: msg.author.displayAvatarURL() })
-        .setThumbnail('https://i.imgur.com/8QGj0rL.png') // Icon bình máu/trái tim
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon bình máu/trái tim
         .setDescription(`>>> 💊 Bạn cảm thấy cơ thể tràn đầy năng lượng!\n\n**Hồi phục:** \`+${actualHealed} HP\``)
         .addFields(
             { name: '📊 Tình trạng sinh lực', value: `${hpBar}\n**${user.hp} / ${user.maxHp} HP**`, inline: false },
@@ -765,7 +765,7 @@ if (cmd === 'shop' || cmd === 'cuahang' || cmd === 'store') {
     const shopEmbed = new EmbedBuilder()
         .setColor('#FEE75C') // Màu vàng của tiền vàng
         .setTitle('🛒 TRUNG TÂM GIAO THƯƠNG OMNIVERSE')
-        .setThumbnail('https://i.imgur.com/3Z6qHwG.png') // Icon túi tiền hoặc shop
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon túi tiền hoặc shop
         .setDescription(`Chào mừng **${msg.author.username}**! Bạn đang có: **${user.money.toLocaleString()}$**\n*Sử dụng lệnh \`!buy [id]\` để mua vật phẩm.*`)
         .setFooter({ text: 'Hệ thống tự động cập nhật vật phẩm mới mỗi tuần!', iconURL: client.user.displayAvatarURL() })
         .setTimestamp();
@@ -839,7 +839,7 @@ if (cmd === 'buy' || cmd === 'mua') {
     // 5. Embed xác nhận cực đẹp
     const successEmbed = new EmbedBuilder()
         .setColor('#57F287')
-        .setAuthor({ name: 'GIAO DỊCH THÀNH CÔNG', iconURL: 'https://i.imgur.com/3Z6qHwG.png' })
+        .setAuthor({ name: 'GIAO DỊCH THÀNH CÔNG', iconURL: 'https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif' })
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
         .setDescription(`>>> Bạn đã thanh toán thành công cho thương nhân OMNIVERSE.`)
         .addFields(
@@ -900,10 +900,10 @@ if (cmd === 'sell' || cmd === 'ban') {
     // 5. Giao diện xác nhận "Xịn"
     const sellEmbed = new EmbedBuilder()
         .setColor('#5865F2') // Màu xanh thương hiệu
-        .setAuthor({ name: 'GIAO DỊCH HOÀN TẤT', iconURL: 'https://i.imgur.com/3Z6qHwG.png' })
+        .setAuthor({ name: 'GIAO DỊCH HOÀN TẤT', iconURL: ' })
         .setThumbnail(msg.author.displayAvatarURL({ dynamic: true }))
         .setDescription(`>>> Bạn đã bán vật phẩm cho thương nhân và nhận được tiền mặt.`)
-        .addFields(
+        .https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif' addFields(
             { name: '📦 Vật phẩm bán', value: `\`${amount}x\` **${item.name}** ${item.emoji || ''}`, inline: true },
             { name: '💰 Thu nhập', value: `\`+${totalEarn.toLocaleString()}$\``, inline: true },
             { name: '💳 Số dư mới', value: `\`${user.money.toLocaleString()}$\``, inline: true }
@@ -957,7 +957,7 @@ if (cmd === 'equip' || cmd === 'mac' || cmd === 'dung') {
     const equipEmbed = new EmbedBuilder()
         .setColor('#5865F2')
         .setAuthor({ name: 'TRANG BỊ VŨ KHÍ MỚI', iconURL: msg.author.displayAvatarURL() })
-        .setThumbnail('https://i.imgur.com/u79K69E.png') // Icon vũ khí/chiến binh
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon vũ khí/chiến binh
         .setDescription(`>>> **${msg.author.username}** đã rút vũ khí và sẵn sàng chiến đấu!`)
         .addFields(
             { name: '🗡️ Vũ khí hiện tại', value: `**${ITEMS[itemKey].name}** ${ITEMS[itemKey].emoji || ''}`, inline: true },
@@ -992,7 +992,7 @@ if (cmd === 'unequip' || cmd === 'thao') {
     const unequipEmbed = new EmbedBuilder()
         .setColor('#2F3136') // Màu tối sang trọng (trạng thái nghỉ)
         .setAuthor({ name: 'THÁO TRANG BỊ', iconURL: msg.author.displayAvatarURL() })
-        .setThumbnail('https://i.imgur.com/u79K69E.png') // Icon nhân vật/giáp trụ
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon nhân vật/giáp trụ
         .setDescription(`>>> Bạn đã cất **${weaponName}** vào lại kho đồ. Hiện tại bạn đang chiến đấu bằng **Tay Không**.`)
         .addFields(
             { name: '📦 Vật phẩm đã tháo', value: `${weaponEmoji} **${weaponName}**`, inline: true },
@@ -1040,7 +1040,7 @@ if (cmd === 'top' || cmd === 'lb' || cmd === 'rank') {
     const topEmbed = new EmbedBuilder()
         .setColor('#FEE75C') // Màu vàng hoàng gia
         .setTitle('🏆 BẢNG VÀNG ĐẠI GIA OMNIVERSE')
-        .setThumbnail('https://i.imgur.com/mO7X8f0.png') // Icon Cup vàng
+        .setThumbnail('https://i.pinimg.com/originals/53/ad/0c/53ad0cc3373bbe0ea51dd878241952c6.gif') // Icon Cup vàng
         .setDescription(`>>> *Dưới đây là danh sách những nhà huấn luyện giàu có nhất thế giới RPG.*\n\n${topList}`)
         .addFields({ 
             name: '👤 Thứ hạng của bạn', 
