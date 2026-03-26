@@ -310,18 +310,18 @@ if (cmd === 'start') {
         .setTimestamp();
 
     // Tạo nút bấm đặt tên
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder()
         .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('set_name_trigger')
                 .setLabel('Đặt Tên Nhân Vật')
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
                 .setEmoji('📝'),
             
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('start_adventure')
                 .setLabel('Bắt Đầu Ngay')
-                .setStyle('SUCCESS')
+                .setStyle(ButtonStyle.Success)
                 .setEmoji('⚔️')
         );
 
@@ -668,7 +668,7 @@ if (cmd === 'fight' || cmd === 'chien' || cmd === 'pve') {
     saveData();
 
     // Embed chiến đấu
-    const fightEmbed = new new EmbedBuilder()
+    const fightEmbed = new EmbedBuilder()
         .setColor(isCrit ? '#FEE75C' : '#5865F2')
         .setAuthor({ name: `Trận chiến với ${monster.name}`, iconURL: msg.author.displayAvatarURL() })
         .setDescription(`>>> ${isCrit ? '💥 **CHÍ MẠNG!** ' : ''}Bạn vung vũ khí gây **${totalDmg}** sát thương!\n${monster.emoji} **${monster.name}** gục ngã sau đòn đánh.`)
@@ -919,7 +919,7 @@ if (cmd === 'sell' || cmd === 'ban') {
         content: `💵 **|** Giao dịch thành công, **${msg.author.username}**!`,
         embeds: [sellEmbed] 
     });
-
+}
   // ==================== EQUIP (UPGRADED) ====================
 if (cmd === 'equip' || cmd === 'mac' || cmd === 'dung') {
     // 1. Kiểm tra đầu vào
