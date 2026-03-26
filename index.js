@@ -1053,10 +1053,10 @@ if (cmd === 'top' || cmd === 'lb' || cmd === 'rank') {
         .setFooter({ text: 'Cập nhật thời gian thực • Hãy chăm chỉ cày cuốc!', iconURL: client.user.displayAvatarURL() })
         .setTimestamp();
 
-    return msg.reply({ 
+   return msg.reply({ 
         content: `👑 **|** Vinh danh những người dẫn đầu!`,
         embeds: [topEmbed] 
     });
-}
-});
+}); // <--- Dấu này đóng sự kiện client.on('messageCreate', ...)
+
 client.login(process.env.TOKEN);
