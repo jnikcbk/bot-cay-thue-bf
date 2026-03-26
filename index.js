@@ -405,7 +405,7 @@ if (cmd === 'inv' || cmd === 'inventory' || cmd === 'tui') {
         .setTimestamp();
 
     // Thêm nút bấm tương tác nhanh
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder()
         .addComponents(
             new MessageButton()
                 .setCustomId('sort_inv')
@@ -415,7 +415,7 @@ if (cmd === 'inv' || cmd === 'inventory' || cmd === 'tui') {
             new MessageButton()
                 .setCustomId('open_shop')
                 .setLabel('Vào Cửa Hàng')
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
                 .setEmoji('💰')
         );
 
@@ -454,9 +454,9 @@ if (cmd === 'daily' || cmd === 'nhanqua') {
 
     // Tạo Embed phần thưởng
     const dailyEmbed = new EmbedBuilder()
-        .setColor('#57F287') // Màu xanh lá tươi mới
+        .setColor('#57F287') 
         .setTitle('🌅 PHẦN THƯỞNG HẰNG NGÀY')
-        .setThumbnail('https://i.pinimg.com/originals/da/2a/fa/da2afa475176eb220f9b8f0ec78f12c9.gif') // Icon hộp quà cute
+        .setThumbnail('https://i.pinimg.com/originals/da/2a/fa/da2afa475176eb220f9b8f0ec78f12c9.gif') 
         .setDescription(`Chúc mừng **${msg.author.username}**! Bạn đã nhận được gói tiếp tế hôm nay:`)
         .addFields(
             { name: '💰 Tiền Thưởng', value: `\`+${rewardMoney.toLocaleString()}$\``, inline: true },
@@ -467,8 +467,13 @@ if (cmd === 'daily' || cmd === 'nhanqua') {
         .setTimestamp();
 
     if (lvlMsg) {
-        dailyEmbed.addField('🆙 LÊN CẤP!', `🌟 **${lvlMsg}**`, false);
-        dailyEmbed.setColor('#FEE75C'); // Đổi sang màu vàng nếu lên cấp
+        // SỬA Ở ĐÂY: addField -> addFields
+        dailyEmbed.addFields({ 
+            name: '🆙 LÊN CẤP!', 
+            value: `🌟 **${lvlMsg}**`, 
+            inline: false 
+        });
+        dailyEmbed.setColor('#FEE75C'); 
     }
 
     return msg.reply({ 
@@ -476,7 +481,6 @@ if (cmd === 'daily' || cmd === 'nhanqua') {
         embeds: [dailyEmbed] 
     });
 }
-
  // ==================== WOODCUTTING (UPGRADED) ====================
 if (cmd === 'wood' || cmd === 'chatgo') {
     // Tính toán phần thưởng cơ bản
@@ -515,14 +519,25 @@ if (cmd === 'wood' || cmd === 'chatgo') {
         .setTimestamp();
 
     // Nếu có vật phẩm hiếm
+    // Nếu có vật phẩm hiếm
     if (extraItem) {
-        woodEmbed.addField('✨ PHÁT HIỆN BẤT NGỜ!', `${extraItem.emoji} Bạn tìm thấy **1 ${extraItem.name}** trong hốc cây!`, false);
-        woodEmbed.setColor('#FEE75C'); // Đổi màu sang vàng để báo hiệu may mắn
+        // SỬA: addField -> addFields
+        woodEmbed.addFields({ 
+            name: '✨ PHÁT HIỆN BẤT NGỜ!', 
+            value: `${extraItem.emoji} Bạn tìm thấy **1 ${extraItem.name}** trong hốc cây!`, 
+            inline: false 
+        });
+        woodEmbed.setColor('#FEE75C'); 
     }
 
     // Nếu lên cấp
     if (lvlMsg) {
-        woodEmbed.addField('🆙 LEVEL UP!', `🌟 **${lvlMsg}**`, false);
+        // SỬA: addField -> addFields
+        woodEmbed.addFields({ 
+            name: '🆙 LEVEL UP!', 
+            value: `🌟 **${lvlMsg}**`, 
+            inline: false 
+        });
     }
 
     return msg.reply({ 
@@ -688,7 +703,12 @@ if (cmd === 'fight' || cmd === 'chien' || cmd === 'pve') {
         .setTimestamp();
 
     if (lvlMsg) {
-        fightEmbed.addField('🆙 LEVEL UP!', `🌟 **${lvlMsg}**`, false);
+        // SỬA: addField -> addFields và dùng cấu trúc Object
+        fightEmbed.addFields({ 
+            name: '🆙 LEVEL UP!', 
+            value: `🌟 **${lvlMsg}**`, 
+            inline: false 
+        });
         fightEmbed.setColor('#57F287');
     }
 
@@ -786,17 +806,17 @@ if (cmd === 'shop' || cmd === 'cuahang' || cmd === 'store') {
     }
 
     // 3. Thêm các nút bấm điều hướng nhanh (Nếu bạn muốn)
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder()
         .addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('buy_potion')
                 .setLabel('Mua Bình Máu')
-                .setStyle('SUCCESS')
+                .setStyle(ButtonStyle.Success)
                 .setEmoji('💊'),
-            new MessageButton()
+            new ButtonBuilder()
                 .setCustomId('view_inv')
                 .setLabel('Xem Kho Đồ')
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
                 .setEmoji('🎒')
         );
 
